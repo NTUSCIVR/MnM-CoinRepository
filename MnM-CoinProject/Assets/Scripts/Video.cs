@@ -2,25 +2,39 @@
 using UnityEngine;
 using UnityEngine.Video;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class Video : MonoBehaviour
 {
     private VideoPlayer videoPlayer;
-    private int textureIndex = -1;
     private List<string> videoUrls;
-    
-    // Use this for initialization
-    void Start ()
+    private string Gender;
+    private int VideoIndex;
+
+    // Applies Gender and VideoIndex if InputCollector is alive
+    private void Awake()
+    {
+        if(InputCollector.Instance != null)
+        {
+            Gender = InputCollector.Instance.Gender;
+            VideoIndex = InputCollector.Instance.VideoID;
+        }
+    }
+
+    // Loads video and Plays it
+    private void Start ()
     {
         videoPlayer = GetComponent<VideoPlayer>();
         videoUrls = new List<string>();
-        LoadVideos();
-        CheckDimensions(videoUrls[0]);
+        LoadVideos(Gender + "\\");
+        CheckDimensions(videoUrls[VideoIndex - 1]);
+        videoPlayer.loopPointReached += FinishPlaying;
 	}
-	
-    void LoadVideos()
+
+    // Loads all videos in the Folder
+    private void LoadVideos(string Folder)
     {
-        DirectoryInfo directory = new DirectoryInfo(@"C:\MnM Videos\");
+        DirectoryInfo directory = new DirectoryInfo(@"C:\MnM Videos\" + Folder);
 
         foreach(var file in directory.GetFiles("*.mp4", SearchOption.AllDirectories))
         {
@@ -29,7 +43,8 @@ public class Video : MonoBehaviour
         videoUrls.TrimExcess();
     }
 
-    void CheckDimensions(string url)
+    // Make a temporary VideoPlayer GameObject to get dimensions of chosen video
+    private void CheckDimensions(string url)
     {
         GameObject tempVideo = new GameObject();
         VideoPlayer tempvideoPlayer = tempVideo.AddComponent<VideoPlayer>();
@@ -45,7 +60,8 @@ public class Video : MonoBehaviour
         tempvideoPlayer.Prepare();
     }
 
-    void PlayVideo(string url, int width, int height)
+    // Plays video with passed in url and dimension we got from CheckDimensions()
+    private void PlayVideo(string url, int width, int height)
     {
         videoPlayer.url = url;
         RenderTexture texture = new RenderTexture(width, height, 24);
@@ -54,18 +70,43 @@ public class Video : MonoBehaviour
         videoPlayer.Play();
     }
 
+    // Stops Playing Video and Quit Application
+    private void FinishPlaying(VideoPlayer _videoPlayer)
+    {
+        // Stops playing video
+        _videoPlayer.Stop();
+
+        // Quit Application
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+    }
+
+    // Loads StartScene
+    private void Restart()
+    {
+        SceneManager.LoadScene("StartScene");
+        Destroy(InputCollector.Instance.gameObject);
+    }
+
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (Input.GetKeyUp(KeyCode.Keypad1))
         {
-            textureIndex = 0;
-            CheckDimensions(videoUrls[textureIndex]);
+            VideoIndex = 0;
+            CheckDimensions(videoUrls[VideoIndex]);
         }
         else if (Input.GetKeyUp(KeyCode.Keypad2))
         {
-            textureIndex = 1;
-            CheckDimensions(videoUrls[textureIndex]);
+            VideoIndex = 1;
+            CheckDimensions(videoUrls[VideoIndex]);
+        }
+        else if(Input.GetKeyUp(KeyCode.R))
+        {
+            Restart();
         }
     }
 }
