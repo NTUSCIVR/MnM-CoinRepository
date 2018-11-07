@@ -6,10 +6,14 @@ using UnityEngine.SceneManagement;
 
 public class Video : MonoBehaviour
 {
-    private VideoPlayer videoPlayer;
+    [HideInInspector]
+    public VideoPlayer videoPlayer;
+    [HideInInspector]
+    public string Gender;
+    [HideInInspector]
+    public int VideoIndex;
+
     private List<string> videoUrls;
-    private string Gender;
-    private int VideoIndex;
 
     // Applies Gender and VideoIndex if InputCollector is alive
     private void Awake()
@@ -34,7 +38,7 @@ public class Video : MonoBehaviour
     // Loads all videos in the Folder
     private void LoadVideos(string Folder)
     {
-        DirectoryInfo directory = new DirectoryInfo(@"C:\MnM Videos\" + Folder);
+        DirectoryInfo directory = new DirectoryInfo(@"C:\GearVideos\" + Folder);
 
         foreach(var file in directory.GetFiles("*.mp4", SearchOption.AllDirectories))
         {
@@ -94,17 +98,7 @@ public class Video : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (Input.GetKeyUp(KeyCode.Keypad1))
-        {
-            VideoIndex = 0;
-            CheckDimensions(videoUrls[VideoIndex]);
-        }
-        else if (Input.GetKeyUp(KeyCode.Keypad2))
-        {
-            VideoIndex = 1;
-            CheckDimensions(videoUrls[VideoIndex]);
-        }
-        else if(Input.GetKeyUp(KeyCode.R))
+        if(Input.GetKeyUp(KeyCode.R))
         {
             Restart();
         }

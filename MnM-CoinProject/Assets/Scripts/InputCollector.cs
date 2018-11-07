@@ -32,7 +32,21 @@ public class InputCollector : MonoBehaviour
     public void ProceedToSelectVideo()
     {
         // Create Folder and CSV for user based on input
-        Gender = GenderInputField.text;
+        switch(GenderInputField.text)
+        {
+            case "F":
+                Gender = "Female";
+                break;
+            case "f":
+                Gender = "Female";
+                break;
+            case "M":
+                Gender = "Male";
+                break;
+            case "m":
+                Gender = "Male";
+                break;
+        }
 
         // Allow input
         VideoIdInputField.gameObject.SetActive(true);
