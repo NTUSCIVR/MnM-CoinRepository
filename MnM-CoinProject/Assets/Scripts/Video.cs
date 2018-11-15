@@ -32,7 +32,7 @@ public class Video : MonoBehaviour
     {
         videoPlayer = GetComponent<VideoPlayer>();
         videoUrls = new List<string>();
-        LoadVideos(Gender + "/");
+        LoadVideos(Gender);
         CheckDimensions(videoUrls[VideoIndex - 1]);
         videoPlayer.loopPointReached += FinishPlaying;
 	}
@@ -40,9 +40,14 @@ public class Video : MonoBehaviour
     // Loads all videos in the Folder
     private void LoadVideos(string Folder)
     {
-        DirectoryInfo directory = new DirectoryInfo(Application.dataPath + "/Videos/" + Folder);
 
-        foreach(var file in directory.GetFiles("*.mp4", SearchOption.AllDirectories))
+#if UNITY_EDITOR
+        DirectoryInfo directory = new DirectoryInfo(@"C:\Videos\" + Folder + "\\");
+#else
+        DirectoryInfo directory = new DirectoryInfo(Application.dataPath + "/Videos/" + Folder + "/");
+#endif
+
+        foreach (var file in directory.GetFiles("*.mp4", SearchOption.AllDirectories))
         {
             videoUrls.Add(directory.FullName + file.Name);
         }
