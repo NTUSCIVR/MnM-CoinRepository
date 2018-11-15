@@ -15,13 +15,15 @@ public class Video : MonoBehaviour
 
     private List<string> videoUrls;
 
-    // Applies Gender and VideoIndex if InputCollector is alive
+    // Applies Gender and VideoIndex if DataCollector is alive
     private void Awake()
     {
-        if(InputCollector.Instance != null)
+        if(DataCollector.Instance != null)
         {
-            Gender = InputCollector.Instance.Gender;
-            VideoIndex = InputCollector.Instance.VideoID;
+            //find the steamvr eye and assign it to data collector
+            DataCollector.Instance.user = FindObjectOfType<SteamVR_Camera>().gameObject;
+            Gender = DataCollector.Instance.Gender;
+            VideoIndex = DataCollector.Instance.VideoID;
         }
     }
 
@@ -30,7 +32,7 @@ public class Video : MonoBehaviour
     {
         videoPlayer = GetComponent<VideoPlayer>();
         videoUrls = new List<string>();
-        LoadVideos(Gender + "\\");
+        LoadVideos(Gender + "/");
         CheckDimensions(videoUrls[VideoIndex - 1]);
         videoPlayer.loopPointReached += FinishPlaying;
 	}
@@ -38,7 +40,7 @@ public class Video : MonoBehaviour
     // Loads all videos in the Folder
     private void LoadVideos(string Folder)
     {
-        DirectoryInfo directory = new DirectoryInfo(@"C:\GearVideos\" + Folder);
+        DirectoryInfo directory = new DirectoryInfo(Application.dataPath + "/Videos/" + Folder);
 
         foreach(var file in directory.GetFiles("*.mp4", SearchOption.AllDirectories))
         {
@@ -92,7 +94,7 @@ public class Video : MonoBehaviour
     private void Restart()
     {
         SceneManager.LoadScene("StartScene");
-        Destroy(InputCollector.Instance.gameObject);
+        Destroy(DataCollector.Instance.gameObject);
     }
 
     // Update is called once per frame
