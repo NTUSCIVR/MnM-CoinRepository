@@ -3,7 +3,8 @@
  * This Script is used for playing 360 Degree Video once, and the application will close afterwards.
  * Allow Inputs to : Restart(Load StartScene and Input User ID and video choice again),
  *                   Increase Volume,
- *                   Decrese Volume
+ *                   Decrese Volume,
+ *                   Skip Video
  * 
  * Used in Main Scene, attached to Empty GameObject "Video", with Video Player Component attached.
  * Component Settings : Source(URL), URL(Leave Empty), PlayOnAwake(False),
@@ -148,7 +149,7 @@ public class Video : MonoBehaviour
     private void Update()
     {
         // Proceed to Restart if 'R' is pressed
-        if(Input.GetKeyUp(KeyCode.R))
+        if (Input.GetKeyUp(KeyCode.R))
         {
             Restart();
         }
@@ -169,6 +170,16 @@ public class Video : MonoBehaviour
                 videoPlayer.SetDirectAudioVolume(0, videoPlayer.GetDirectAudioVolume(0) - 0.1f);
             else
                 videoPlayer.SetDirectAudioVolume(0, 0f);
+        }
+
+        // When video is playing
+        if (videoPlayer.isPlaying)
+        {
+            // Skip to second last second
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                FinishPlaying(videoPlayer);
+            }
         }
     }
 }

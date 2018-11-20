@@ -50,6 +50,7 @@ public class DataCollector : MonoBehaviour
     // For Recording Head Movement Data
     private bool startRecording = false;
     private float time = 0f;
+    private string currentPath = "";
 
     // Runs before Start()
     private void Awake()
@@ -145,20 +146,26 @@ public class DataCollector : MonoBehaviour
     // Returns the file path being used to store the data
     private string GetPath()
     {
-        // If the filepath already exists, create a new file with a duplicate number
-        string filePath = Application.dataPath + "/Data/" + dataID + ".csv";
-        int duplicateCounts = 0;
-        while (true)
+        if (currentPath == "")
         {
-            if (File.Exists(filePath))
+            // If the filepath already exists, create a new file with a duplicate number
+            string filePath = Application.dataPath + "/Data/" + dataID + ".csv";
+            int duplicateCounts = 0;
+            while (true)
             {
-                ++duplicateCounts;
-                filePath = Application.dataPath + "/Data/" + dataID + "(" + duplicateCounts.ToString() + ")" + ".csv";
+                if (File.Exists(filePath))
+                {
+                    ++duplicateCounts;
+                    filePath = Application.dataPath + "/Data/" + dataID + "(" + duplicateCounts.ToString() + ")" + ".csv";
+                }
+                else
+                    break;
             }
-            else
-                break;
+            currentPath = filePath;
+            return filePath;
         }
-        return filePath;
+        else
+            return currentPath;
     }
 
     // Create the csv file
